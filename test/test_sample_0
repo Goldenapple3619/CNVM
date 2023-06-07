@@ -1,0 +1,123 @@
+[description]
+name: test_sample_rom
+desc: test sample for the rom package of the emulator
+[/end]
+
+[test]
+imports: src.PyPort.lib.RomFF.Rom
+name: test_create_rom
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+                                                                    ;\
+if (not rom):                                                       ;\
+    return (1)                                                      ;\
+if (not hasattr(rom, 'memory_mapper') or rom.memory_mapper != 0):   ;\
+    return (1)                                                      ;\
+if (not hasattr(rom, 'registries')):                                ;\
+    return (1)                                                      ;\
+if ('x' not in rom.registries):                                     ;\
+    return (1)                                                      ;\
+if ('y' not in rom.registries):                                     ;\
+    return (1)                                                      ;\
+if ('temp' not in rom.registries):                                  ;\
+    return (1)                                                      ;\
+if ('fetched' not in rom.registries):                               ;\
+    return (1)                                                      ;\
+if ('ptr_mem' not in rom.registries):                               ;\
+    return (1)                                                      ;\
+if ('ptr_prg' not in rom.registries):                               ;\
+    return (1)                                                      ;\
+if ('mem_device' not in rom.registries):                            ;\
+    return (1)                                                      ;\
+if ('prg_device' not in rom.registries):                            ;\
+    return (1)                                                      ;\
+if (not hasattr(rom, 'ram_memory')):                                ;\
+    return (1)                                                      ;\
+if (not hasattr(rom, 'prg_memory')):                                ;\
+    return (1)                                                      ;\
+if (not hasattr(rom, 'magic') or rom.magic != (0xFA, 0xBA)):        ;\
+    return (1)                                                      ;\
+return (0)                                                          ;
+[/end]
+
+[test]
+imports: src.PyPort.lib.RomFF.Rom
+name: test_copying_rom
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+rom_2 = Rom(0)                                                      ;\
+                                                                    ;\
+if (not rom or not rom_2):                                          ;\
+    return (1)                                                      ;\
+rom.ram_memory = {i: i % 100 for i in range(100)}                   ;\
+rom.prg_memory = {i * 2: i % 500 for i in range(100)}               ;\
+rom_2 = rom.copy()                                                  ;\
+                                                                    ;\
+if (not rom_2 or rom != rom_2):                                     ;\
+    return (1)                                                      ;\
+                                                                    ;\
+return (0)                                                          ;
+[/end]
+
+[test]
+imports: src.PyPort.lib.RomFF.Rom,os.remove
+name: test_saving_loading_rom
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+rom_2 = Rom(0)                                                      ;\
+                                                                    ;\
+if (not rom or not rom_2):                                          ;\
+    return (1)                                                      ;\
+rom.ram_memory = {i: i % 100 for i in range(100)}                   ;\
+rom.prg_memory = {i * 2: i % 500 for i in range(100)}               ;\
+rom.save_to_file("./temp/temporary_rom.rom")                        ;\
+rom_2.load_from_file("./temp/temporary_rom.rom")                    ;\
+                                                                    ;\
+if (rom != rom_2):                                                  ;\
+    return (1)                                                      ;\
+                                                                    ;\
+remove("./temp/temporary_rom.rom")                                  ;\
+return (0)                                                          ;
+[/end]
+
+[test]
+imports: src.PyPort.lib.RomFF.Rom,os.remove
+name: test_saving_loading_rom_big_data
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+rom_2 = Rom(0)                                                      ;\
+                                                                    ;\
+if (not rom or not rom_2):                                          ;\
+    return (1)                                                      ;\
+rom.ram_memory = {i: i % 100 for i in range(10000)}                 ;\
+rom.prg_memory = {i * 2: i % 500 for i in range(10000)}             ;\
+rom.save_to_file("./temp/temporary_rom.rom")                        ;\
+rom_2.load_from_file("./temp/temporary_rom.rom")                    ;\
+                                                                    ;\
+if (rom != rom_2):                                                  ;\
+    return (1)                                                      ;\
+                                                                    ;\
+remove("./temp/temporary_rom.rom")                                  ;\
+return (0)                                                          ;
+[/end]
+
+[test]
+imports: src.PyPort.lib.RomFF.Rom,os.remove
+name: test_saving_loading_rom_really_big_data
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+rom_2 = Rom(0)                                                      ;\
+                                                                    ;\
+if (not rom or not rom_2):                                          ;\
+    return (1)                                                      ;\
+rom.ram_memory = {i: i % 100 for i in range(300000)}                ;\
+rom.prg_memory = {i * 2: i % 500 for i in range(300000)}            ;\
+rom.save_to_file("./temp/temporary_rom.rom")                        ;\
+rom_2.load_from_file("./temp/temporary_rom.rom")                    ;\
+                                                                    ;\
+if (rom != rom_2):                                                  ;\
+    return (1)                                                      ;\
+                                                                    ;\
+remove("./temp/temporary_rom.rom")                                  ;\
+return (0)                                                          ;
+[/end]

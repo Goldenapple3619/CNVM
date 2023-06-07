@@ -1,0 +1,16 @@
+using_reg x,y
+using_instructions ICX, ICY
+
+var 0x20, std_temp
+var 0x21, std_x
+var 0x22, std_y
+
+.fib __term
+    std_x $std_temp
+    add $std_x, $std_y
+    std_temp $std_y
+    std_y $std_x
+    sub $__term, 1
+    if $__term
+    fib $__term
+fib.

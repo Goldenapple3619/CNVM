@@ -1,0 +1,15 @@
+* text=auto
+
+*.bat eol=crlf
+*.ps eol=crlf
+*.cs  eol=crlf
+*.py  eol=lf
+*.c  eol=lf
+*.cpp  eol=lf
+*.rsm  eol=lf
+
+*.out binary
+*.rom binary
+*.png binary
+*.jpg binary
+*.pdf binary

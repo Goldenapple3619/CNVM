@@ -1,0 +1,90 @@
+[description]
+name: test_sample_emulator
+desc: test sample for the main package of the emulator
+[/end]
+
+[test]
+imports: sys,os.remove,sys,src.PyPort.mother_board.handling_hw.get_connected_hardware,src.PyPort.mother_board.handling_hw.POWERED_COMPONENT,src.PyPort.mother_board
+name: test_basic_powering
+run:                                                                    ;\
+    temp = sys.stdout                                                   ;\
+    sys.stdout = open('./temp/debug_hw.log', 'w')                       ;\
+    get_connected_hardware(["external_ports"])                          ;\
+    sys.stdout.close()                                                  ;\
+    sys.stdout = temp                                                   ;\
+    remove("./temp/debug_hw.log")                                       ;\
+    if (len(POWERED_COMPONENT) == 0):                                   ;\
+        return (1)                                                      ;\
+    return (0)                                                          ;
+[/end]
+
+[test]
+imports: sys,os.remove,sys,src.PyPort.mother_board.handling_hw.get_connected_hardware,src.PyPort.mother_board.handling_hw.POWERED_COMPONENT
+name: test_basic_ram
+run:                                                                    ;\
+    temp = sys.stdout                                                   ;\
+    sys.stdout = open('./temp/debug_hw.log', 'w')                       ;\
+    get_connected_hardware(["external_ports"])                          ;\
+    sys.stdout.close()                                                  ;\
+    sys.stdout = temp                                                   ;\
+    remove("./temp/debug_hw.log")                                       ;\
+    if (len([item["component"] for item in POWERED_COMPONENT if item["comp"] == 0x01 and item['status'] == 1]) == 0):;\
+        return (1)                                                      ;\
+    ram = [item["component"] for item in POWERED_COMPONENT if item["comp"] == 0x01 and item['status'] == 1][0];\
+    ram.write(0xFFFFFFFFFFF, 0xED)                                      ;\
+    if (ram.read(0xFFFFFFFFFFF) != 0x00):                               ;\
+        return (1)                                                      ;\
+    ram.write(0x3, 0xED)                                                ;\
+    if (ram.read(0x3) != 0xED):                                         ;\
+        return (1)                                                      ;\
+    return (0)                                                          ;
+[/end]
+
+[test]
+imports: src.casm_lang.casm_cli.casm_cli,os.path.isfile,src.PyPort.lib.RomFF.Rom,os.remove,sys,src.PyPort.mother_board.handling_hw.get_connected_hardware,src.PyPort.mother_board.handling_hw.POWERED_COMPONENT
+name: test_basic_cpu_casm
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+                                                                    ;\
+temp = sys.stdout                                                   ;\
+sys.stdout = open('./temp/debug_compilation.log', 'w')              ;\
+with open("./temp/test_casm.rsm", 'w') as f:                        ;\
+    f.write(""".main\n    log 110\nmain.""")                        ;\
+if (casm_cli(2, [None, "./temp/test_casm.rsm"]) != 0):              ;\
+    return (1)                                                      ;\
+get_connected_hardware(["external_ports"])                          ;\
+sys.stdout.close()                                                  ;\
+sys.stdout = temp                                                   ;\
+                                                                    ;\
+remove("./temp/debug_compilation.log")                              ;\
+remove("./temp/test_casm.rsm")                                      ;\
+if (not rom or not isfile("test_casm.out")):                        ;\
+    return (1)                                                      ;\
+rom.load_from_file('test_casm.out')                                 ;\
+remove("test_casm.out")                                             ;\
+if (0xFF not in rom.prg_memory.values()):                           ;\
+    return (1)                                                      ;\
+if (len([item["component"] for item in POWERED_COMPONENT if item["comp"] == 0x01 and item['status'] == 1]) == 0):;\
+    return (1)                                                      ;\
+if (len([item["component"] for item in POWERED_COMPONENT if item["comp"] == 0x02 and item['status'] == 1]) == 0):;\
+    return (1)                                                      ;\
+ram = [item["component"] for item in POWERED_COMPONENT if item["comp"] == 0x01 and item['status'] == 1][0];\
+cpu = [item["component"] for item in POWERED_COMPONENT if item["comp"] == 0x02 and item['status'] == 1][0];\
+for item in rom.ram_memory:                                         ;\
+    ram.write(item, rom.ram_memory[item])                           ;\
+for item in rom.prg_memory:                                         ;\
+    ram.write(item, rom.prg_memory[item])                           ;\
+for item in rom.registries:                                         ;\
+    cpu.registries[item] = rom.registries[item]                     ;\
+sys.stdout = open('./temp/debug_running_ins.log', 'w')              ;\
+while (ram.read(cpu.registries["ptr_prg"]) != 0x3E):                ;\
+    cpu.clock();\
+                                                                    ;\
+sys.stdout.close()                                                  ;\
+sys.stdout = temp                                                   ;\
+with open('./temp/debug_running_ins.log') as f:                     ;\
+    if (f.read() != 'n'):                                           ;\
+        return (1)                                                  ;\
+remove('./temp/debug_running_ins.log')                              ;\
+return (0)                                                          ;
+[/end]

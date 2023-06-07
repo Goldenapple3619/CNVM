@@ -1,0 +1,30 @@
+using_reg x,y
+using_instructions ICX, ICY
+
+var 0x20, my_var2
+var 0x30, my_var3
+var , my_var
+
+.function2 value, value1
+    log 110
+    halt
+function2.
+
+.function1 value
+    log 110
+function1.
+
+.f
+    log 111
+f.
+
+.main
+    log 110
+    my_var 10
+    my_var2 3 //test hello log var log|halt .
+    my_var3 55
+
+    function1 $my_var
+    function2 $my_var2, $my_var3
+    f 0x00
+main.

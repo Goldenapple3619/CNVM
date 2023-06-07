@@ -1,0 +1,101 @@
+[description]
+name: test_sample_casm_compiler
+desc: test sample for the casm compiler for the emulator
+[/end]
+
+[test]
+imports: src.casm_lang.casm_cli.casm_cli,os.path.isfile,sys.stdout,os.remove,sys
+name: test_casm_basic_create_file
+run:                                                                ;\
+temp = sys.stdout                                                   ;\
+sys.stdout = open('./temp/debug_compilation.log', 'w')              ;\
+with open("./temp/test_casm.rsm", 'w') as f:                        ;\
+    f.write(""".main\n    halt\nmain.""")                           ;\
+if (casm_cli(2, [None, "./temp/test_casm.rsm"]) != 0):              ;\
+    return (1)                                                      ;\
+sys.stdout.close()                                                  ;\
+sys.stdout = temp                                                   ;\
+                                                                    ;\
+remove("./temp/debug_compilation.log")                              ;\
+remove("./temp/test_casm.rsm")                                      ;\
+if (not isfile("test_casm.out")):                                   ;\
+    return (1)                                                      ;\
+remove("test_casm.out")                                             ;\
+                                                                    ;\
+return (0)                                                          ;
+[/end]
+[test]
+imports: src.casm_lang.casm_cli.casm_cli,os.path.isfile,src.PyPort.lib.RomFF.Rom,sys.stdout,os.remove,sys
+name: test_casm_basic_compilation_bin
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+                                                                    ;\
+temp = sys.stdout                                                   ;\
+sys.stdout = open('./temp/debug_compilation.log', 'w')              ;\
+with open("./temp/test_casm.rsm", 'w') as f:                        ;\
+    f.write(""".main\n    halt\nmain.""")                           ;\
+if (casm_cli(2, [None, "./temp/test_casm.rsm"]) != 0):              ;\
+    return (1)                                                      ;\
+sys.stdout.close()                                                  ;\
+sys.stdout = temp                                                   ;\
+                                                                    ;\
+remove("./temp/debug_compilation.log")                              ;\
+remove("./temp/test_casm.rsm")                                      ;\
+if (not rom or not isfile("test_casm.out")):                        ;\
+    return (1)                                                      ;\
+rom.load_from_file('test_casm.out')                                 ;\
+remove("test_casm.out")                                             ;\
+if (0x3E not in rom.prg_memory.values()):                           ;\
+    return (1)                                                      ;\
+                                                                    ;\
+return (0)                                                          ;
+[/end]
+[test]
+imports: src.casm_lang.casm_cli.casm_cli,os.path.isfile,src.PyPort.lib.RomFF.Rom,sys.stdout,os.remove,sys
+name: test_casm_basic_compilation_bin_multiple
+run:                                                                ;\
+rom = Rom(0)                                                        ;\
+                                                                    ;\
+temp = sys.stdout                                                   ;\
+sys.stdout = open('./temp/debug_compilation.log', 'w')              ;\
+with open("./temp/test_casm.rsm", 'w') as f:                        ;\
+    f.write(""".main\n    halt\nmain.""")                           ;\
+with open("./temp/test_casm_2.rsm", 'w') as f:                      ;\
+    f.write(""".test\n    log 110\ntest.""")                        ;\
+if (casm_cli(3, [None, "./temp/test_casm.rsm", "./temp/test_casm_2.rsm"]) != 0):;\
+    return (1)                                                      ;\
+sys.stdout.close()                                                  ;\
+sys.stdout = temp                                                   ;\
+                                                                    ;\
+remove("./temp/debug_compilation.log")                              ;\
+remove("./temp/test_casm.rsm")                                      ;\
+remove("./temp/test_casm_2.rsm")                                    ;\
+if (not rom or not isfile("test_casm.out")):                        ;\
+    return (1)                                                      ;\
+rom.load_from_file('test_casm.out')                                 ;\
+remove("test_casm.out")                                             ;\
+if (0x3E not in rom.prg_memory.values() or 0xFF not in rom.prg_memory.values()):;\
+    return (1)                                                      ;\
+                                                                    ;\
+return (0)                                                          ;
+[/end]
+[test]
+imports: src.casm_lang.casm_cli.casm_cli,os.path.isfile,sys.stdout,os.remove,sys
+name: test_casm_basic_compilation_error
+run:                                                                ;\
+temp = sys.stdout                                                   ;\
+sys.stdout = open('./temp/debug_compilation.log', 'w')              ;\
+with open("./temp/test_casm.rsm", 'w') as f:                        ;\
+    f.write(""".main\n    halt 5\nmain.""")                         ;\
+ret = casm_cli(2, [None, "./temp/test_casm.rsm"])                   ;\
+                                                                    ;\
+sys.stdout.close()                                                  ;\
+sys.stdout = temp                                                   ;\
+                                                                    ;\
+remove("./temp/debug_compilation.log")                              ;\
+remove("./temp/test_casm.rsm")                                      ;\
+if (isfile("test_casm.out") or not ret):                            ;\
+    return (1)                                                      ;\
+                                                                    ;\
+return (0)                                                          ;
+[/end]

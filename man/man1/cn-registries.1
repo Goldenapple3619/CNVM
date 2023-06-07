@@ -1,0 +1,37 @@
+.\" Manpage for CNEmulator binary instructions.
+.TH cn-registries 1 "02 April 2023" "1.0" "cn-registries man page"
+.SH NAME
+cn-registries \- registries of the CNEmulator 
+.SH DESCRIPTION
+CNEmulator emulate it own CPU with it own registries. 
+.br
+there is 8 registries at the moment. 
+.br
+
+.br
+here are a list of all the registries:
+    ┌──────────────────────┬──────────────────────┐
+    │  Name                │  Name                │
+    ├──────────────────────┼──────────────────────┤
+    │  x                   │  ptr_prg             │
+    │  y                   │  ptr_mem             │
+    │  temp                │  prg_device          │
+    │  fetched             │  mem_device          │
+    └──────────────────────┴──────────────────────┘
+.br
+
+.br
+  x          - used for calculation and most of the operation 
+  y          - used for calculation and most of the operation  
+  temp       - used to temporarly move x or y registry used in some operation
+  fetched    - used to get the result of an external operation
+
+  ptr_prg    - the adress of the current instructions
+  ptr_mem    - adress where the memory is going to be read / write
+  prg_device - device where the program is being read
+  mem_device - device where memory is being read / write
+
+.SH SEE ALSO
+cn-bin(1) cn-registries(1)
+.SH AUTHOR
+Goldenapple

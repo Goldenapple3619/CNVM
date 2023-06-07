@@ -1,0 +1,6 @@
+![keys]
+    name:string,
+    path:string,
+    type:string
+![values]
+    "main"|"$images_path$"|"dir"

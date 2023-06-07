@@ -1,0 +1,107 @@
+.\" Manpage for CNEmulator binary instructions.
+.TH cn-bin 1 "02 April 2023" "1.0" "cn-bin man page"
+.SH NAME
+cn-bin \- binary instructions for the CNEmulator 
+.SH DESCRIPTION
+CNEmulator emulate it own CPU with it own instructions. 
+.br
+there is 68 instructions at the moment.
+.br
+
+.br
+here are a list of all the instructions:
+    ┌─────────────────────────────────────────────┐
+    │  Hex   Name  Desc                           │
+    ├─────────────────────────────────────────────┤
+    │  00    NULL  - Do Nothing                   │
+    │  01    ICX   - Add 1 to (x) registry        │
+    │  02    ICY   - Add 1 to (y) registry        │
+    │  03    ADX   - add (x) and (temp)           │
+    │  04    ADY   - add (y) and (temp)           │
+    │  05    SUX   - sub (x) and (temp)           │
+    │  06    IDN   - get hw id                    │
+    │  07    SUY   - sub (y) and (temp)           │
+    │  08    MUX   - mul (x) and (temp)           │
+    │  09    MUY   - mul (y) and (temp)           │
+    │  0A    DIX   - div (x) and (temp)           │
+    │  0B    DIY   - div (y) and (temp)           │
+    │  0C    MOX   - modulo (x) and (temp)        │
+    │  0D    MOY   - modulo (y) and (temp)        │
+    │  0E    TVF   - move (fetched) to (temp)     │
+    │  0F    END   - end hw                       │
+    │  10    TVX   - move (x) to (temp)           │
+    │  11    TVY   - move (y) to (temp)           │
+    │  12    PPX   - move (x) to (ptr_prg)        │
+    │  13    PPY   - move (y) to (ptr_prg)        │
+    │  14    MPX   - move (x) to (ptr_mem)        │
+    │  15    MPY   - move (y) to (ptr_mem)        │
+    │  16    DMX   - move (x) as (mem_device)     │
+    │  17    DMY   - move (y) as (mem_device)     │
+    │  18    DPX   - move (x) as (prg_device)     │
+    │  19    DPY   - move (x) as (prg_device)     │
+    │  1A    XVY   - move (y) to (x)              │
+    │  1B    YVX   - move (x) to (y)              │
+    │  1C    XVT   - move (temp) to (x)           │
+    │  1D    YVT   - move (temp) to (y)           │
+    │  1E    XVF   - move (fetched) to (x)        │
+    │  1F    YVF   - move (fetched) to (y)        │
+    │  20    MVX   - write (x) memory device      │
+    │                (mem_device) at (ptr_mem)    │
+    │  21    MVY   - write (y) in memory device   │
+    │                (mem_device) at (ptr_mem)    │
+    │  22    RDM   - read memory from device      │
+    │                (mem_device) at (ptr_mem)    │
+    │                and put into (fetched)       │
+    │  23    TMX   - send message (x) to device   │
+    │                (temp) and store the value   │
+    │                in (fetched)                 │
+    │  24    TMY   - send message (y) to device   │
+    │                (temp) and store the value   │
+    │                in (fetched)                 │
+    │  25    ANX   - and operation (x) & (temp)   │
+    │  26    ANY   - and operation (y) & (temp)   │
+    │  27    ORX   - or operation (x) | (temp)    │
+    │  28    ORY   - or operation (y) | (temp)    │
+    │  29    XOX   - xor operation (x) ^ (temp)   │
+    │  2A    XOY   - xor operation (y) ^ (temp)   │
+    │  2B    LSX   - lshift op (x) << (temp)      │
+    │  2C    LSY   - lshift op (y) << (temp)      │
+    │  2D    RSX   - rshift op (x) >> (temp)      │
+    │  2E    RSY   - rshift op (y) >> (temp)      │
+    │  2F    EQX   - eq operation (x) == (temp)   │
+    │  30    EQY   - eq operation (y) == (temp)   │
+    │  31    NQX   - not eq op (x) != (temp)      │
+    │  32    NQY   - not eq op (y) != (temp)      │
+    │  33    SPX   - superior op (x) > (temp)     │
+    │  34    SPY   - superior op (y) > (temp)     │
+    │  35    INX   - inferior op (x) < (temp)     │
+    │  36    INY   - inferior op (y) < (temp)     │
+    │  37    IEX   - inferior eq op (x) <= (temp) │
+    │  38    IEY   - inferior eq op (y) <= (temp) │
+    │  39    SEX   - superior eq op (x) >= (temp) │
+    │  3A    SEY   - superior eq op (y) >= (temp) │
+    │  3B    NOX   - not operation ~(x)           │
+    │  3C    NOY   - not operation ~(y)           │
+    │  3D    CNE   - conditional execute next     │
+    │                op if (temp) else skip       │
+    │  3E    HALT  - stop                         │
+    │  3F    XPP   - move (ptr_prg) to (x)        │
+    │  40    YPP   - move (ptr_prg) to (y)        │
+    │  41    SWX   - swap temp and x              │
+    │  42    SWY   - swap temp and y              │
+    │  43    REX   - reset x                      │
+    │  44    REY   - reset y                      │
+    │  45    XMP   - move (ptr_mem) to (x)        │
+    │  46    YMP   - move (ptr_mem) to (y)        │
+    │  47    STX   - move next (ptr_prg) at       │
+    │                (prg_device) into (x)        │
+    │  48    STY   - move next (ptr_prg) at       │
+    │                (prg_device) into (y)        │
+    │  FF    LOG   - log to emulator the ascii    │
+    │                value store in (temp)        │
+    └─────────────────────────────────────────────┘
+
+.SH SEE ALSO
+cn-bin(1) cn-registries(1)
+.SH AUTHOR
+Goldenapple
